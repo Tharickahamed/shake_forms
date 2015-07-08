@@ -1,0 +1,73 @@
+<?php
+
+/**
+ * @file
+ * Shake Forms Drupal module.
+ */
+function shake_forms_init() {
+global $theme;
+
+    // Check admin theme
+    if (variable_get('shake_forms_enable_admin_theme', TRUE)==TRUE || (variable_get('shake_forms_enable_admin_theme', TRUE)==FALSE && ($theme != variable_get('admin_theme')))) {
+      drupal_add_css(drupal_get_path('module', 'shake_forms') . '/shake_forms.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+      drupal_add_js(drupal_get_path('module', 'shake_forms') . '/mindfor.shake.js');
+      drupal_add_js(drupal_get_path('module', 'shake_forms') . '/shake_forms.js');
+      drupal_add_js(array('shake_forms' => array('label' => t(variable_get('shake_forms_error_color', 'Back to top')))), 'setting');
+    
+    
+     // border colors
+     $bgcolor = ".shake_error { border-color: " . variable_get('shake_forms_error_color', '#a94442') . ";}";
+     $bgcolor .= ".shake_success { border-color: " . variable_get('shake_forms_success_color', '#3c763d') . ";}";
+     drupal_add_css($bgcolor, 'inline');
+    
+     // hide description
+     if (variable_get('shake_forms_descriptions', TRUE)==TRUE) {
+        drupal_add_css('form .description { display: none;}', 'inline');
+     }
+    }
+}
+ 
+/**
+ * Implements hook_help().
+ */
+function shake_forms_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#shake_forms':
+      return '<p>' . t('Makes form fields compact by overlaying the field label on top the field itself using jQuery.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function shake_forms_permission() {
+  return array(
+    'administer Shake Forms' => array(
+      'title' => t('Administer Shake Forms'),
+      'description' => t('Configure forms to display compact and their behavior.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function shake_forms_menu() {
+    $items = array();
+  $items['admin/config/user-interface/shake_forms'] = array(
+    'title' => 'Shake Forms',
+    'description' => 'Configure Shake Forms settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('shake_forms_admin_form'),
+    'access arguments' => array('administer Shake Forms'),
+    'file' => 'shake_forms.admin.inc',
+  );
+  return $items;
+}
+
+
+
+
+
+
+
